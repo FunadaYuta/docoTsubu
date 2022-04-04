@@ -32,7 +32,7 @@
 
 <a href="/docoTsubu/">TOPへ</a>
 <%}else{%>
-<p>ログインに失敗しました</p>
+<p>ログインに失敗しましたよ</p>
 <a href="/docoTsubu/">TOPへ</a>
 <%} %>
 </body>
