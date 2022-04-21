@@ -1,0 +1,12 @@
+@charset "UTF-8";
+h1.h1{
+	color:red;
+}
+form.form textarea.text{
+	white-space:pre-wrap;
+	font-size: 18px;
+}
+
+.mutter-text{
+	white-space:pre-wrap;
+}

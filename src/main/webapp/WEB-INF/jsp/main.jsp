@@ -1,44 +1,74 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@ page import="model.User,model.Mutter,model.Thread,java.util.List" %>
+    <%@ include file="/common.jsp" %>
     <%
-    User loginUser = (User)session.getAttribute("loginUser");
     
     /*List<Mutter> mutterList = (List<Mutter>)application.getAttribute("mutterList");*/
-    List<Thread> threadList = (List<Thread>)application.getAttribute("threadList");
+    
     //リクエストスコープに保存されたエラーメッセージを取得
     String errorMsg = (String)request.getAttribute("errorMsg");
     
     int index = (int)session.getAttribute("index");
+    
+    Thread thread = threadList.get(index);
     %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>おふなの掲示板</title>
+<title><%= thread.getThreadName() %></title>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/main.css">
 </head>
 <body>
-<h1>メインページ</h1>
+<header>
+<jsp:include page="/footer.jsp"/>
+</header>
+
+
+<h1 class="h1"><%= thread.getThreadName() %></h1>
+
 <p>
-<%= loginUser.getName() %>さん、ログイン中
-<a href="/docoTsubu/Logout">ログアウト</a>
-</p>
-<p>
-<a href="/docoTsubu/Main">更新</a>
+
+<!-- コメント入力フォームに飛ばす -->
+<button type="button" onclick="location.href='#commentForm'">コメントを投稿</button>
+
+<a href="/docoTsubu/Main?index=<%= index %>">更新</a>
 <a href="/docoTsubu/loginResult.jsp">戻る</a>
 </p>
-<form action="/docoTsubu/Main?<%= index %>" method="post">
-<input type="text" name="text">
+
+<% int count = 0; %>
+<% for(Mutter mutter : thread.getMutterList()){ %>
+<c:set var="String"><%= mutter.getText() %></c:set>
+<% count++;%>
+<%= count %>  名前：<%= mutter.getUserName() %>(<%= mutter.getAge() %>) <%= mutter.getDate() %>
+<p class="mutter-text"><c:out value="${String }"/></p>
+
+<%} %>
+
+<hr>
+
+コメントを投稿する<br>
+<!-- 入力フォーム -->
+
+名前:<%= loginUser.getName() %>(<%= loginUser.getAge() %>)<br>
+内容:
+<form id="Form" class="form" action="/docoTsubu/Main?<%= index %>" method="post">
+<textarea id="commentForm" class="text" name="text" rows="4" cols="40" maxlength="255"></textarea>
 <input type="submit" value="つぶやく">
 </form>
+
 <% if(errorMsg != null){ %>
 <p><font color="#ff0000">※<%= errorMsg %></font></p>
 <%} %>
-<% int count = 0; %>
-<% for(Mutter mutter : threadList.get(index).getMutterList()){ %>
-<% count++;%>
-<p><%= count %>  名前：<%= mutter.getUserName() %> <%= mutter.getDate() %><br>
-&emsp; <%= mutter.getText() %><br>
-<%} %>
+
+<hr>
+<!-- スレッド一覧 -->
+<footer>
+<jsp:include page="/threadList.jsp"/>
+
+</footer>
+
+
+
 </body>
 </html>

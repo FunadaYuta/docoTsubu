@@ -19,14 +19,14 @@ form p{
 
 .form-title{
   text-align: center;
-  }
+  	}
 
 .name,.pass{
   margin-bottom: 20px;
   }
 
-input[type="text"],
-input[type="password"] {
+.create_thread input[type="text"],
+.create_thread input[type="password"] {
   width: 300px;
   padding: 4px;
   font-size: 14px;
@@ -65,11 +65,9 @@ input[type="password"] {
   border-bottom: 2px solid #4eb4c2;
   margin-bottom: 20px;
   }
+
+button{
   
-
-
-
-button.loginButton{
 	
   font-family: Arial;
   color: #ffffff;
@@ -89,12 +87,13 @@ button.loginButton{
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#61c7e0), to(#418da8));
   background: -moz-linear-gradient(top, #61c7e0, #418da8);
   }
-button.loginButton:hover{
+button:hover{
   background: #37a4bf;
  }
  
+#errorMsg{
+ text-align: center;
+ }
  
-.button_wrapper {
-   text-align:center;
-}
+ 
  

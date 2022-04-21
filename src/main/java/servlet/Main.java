@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.Account;
 import model.Mutter;
 import model.NowDateLogic;
 import model.PostMutterLogic;
 import model.Thread;
-import model.User;
 
 @WebServlet("/Main")
 public class Main extends HttpServlet {
@@ -33,22 +33,7 @@ public class Main extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.setAttribute("index", index);
 		
-		//つぶやきリストをアプリケーションスコープから取得
-//		ServletContext application = this.getServletContext();
-//		List<Mutter> mutterList = 
-//				(List<Mutter>)application.getAttribute("mutterList");
-		
-		//取得出来なかった場合時は、つぶやきリストを新規作成して
-		//アプリケーションスコープに保存
-//		if(mutterList == null) {
-//			mutterList = new ArrayList<>();
-//			application.setAttribute("mutterList", mutterList);
-//		}
-		
-		//ログインしているか確認するため
-		//セッションスコープからユーザー情報を取得
-//		HttpSession session = request.getSession();
-		User loginUser = (User)session.getAttribute("loginUser");
+		Account loginUser = (Account)session.getAttribute("loginUser");
 		
 		if(loginUser == null) {
 			//リダイレクト
@@ -65,7 +50,6 @@ public class Main extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		//リクエストパラメーターの取得
-		request.setCharacterEncoding("UTF-8");
 		String text = request.getParameter("text");
 		
 		//入力値チェック
@@ -76,28 +60,34 @@ public class Main extends HttpServlet {
 		
 			//セッションスコープに保存されたユーザー情報を取得
 			HttpSession session = request.getSession();
-			User loginUser = (User)session.getAttribute("loginUser");
+			Account loginUser = (Account)session.getAttribute("loginUser");
 			int index = (int)session.getAttribute("index");
 		
 			//現在の時間を取得
 			NowDateLogic nowDate = new NowDateLogic();
 			String date = nowDate.execute();
 			
+			//年齢を取得
+			int age = loginUser.getAge();
+			
 			//つぶやきをつぶやきリストに追加
 			List<Mutter> mutterList = threadList.get(index).getMutterList();
-			Mutter mutter = new Mutter(loginUser.getName(),text,date);
+			Mutter mutter = new Mutter(loginUser.getName(),text,age,date);
 			PostMutterLogic postMutterLogic = new PostMutterLogic();
 			postMutterLogic.execute(mutter, mutterList);
 		
 			application.setAttribute("mutterList", mutterList);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/main.jsp");
+			dispatcher.forward(request, response);
 		
 		}else {
 			request.setAttribute("errorMsg", "つぶやきが入力されていません");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/main.jsp#Form");
+			dispatcher.forward(request, response);
 		}
 		
 		//メイン画面にフォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/main.jsp");
-		dispatcher.forward(request, response);
+		
 	}
 	
 

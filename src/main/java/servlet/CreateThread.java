@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.Account;
 import model.Mutter;
 import model.NowDateLogic;
 import model.PostMutterLogic;
 import model.PostThreadLogic;
 import model.Thread;
-import model.User;
 
 @WebServlet("/CreateThread")
 public class CreateThread extends HttpServlet {
@@ -33,7 +33,7 @@ public class CreateThread extends HttpServlet {
 		//ログインしているか確認するため
 		//セッションスコープからユーザー情報を取得
 		HttpSession session = request.getSession();
-		User loginUser = (User)session.getAttribute("loginUser");
+		Account loginUser = (Account)session.getAttribute("loginUser");
 				
 		if(loginUser == null) {
 			//リダイレクト
@@ -48,7 +48,6 @@ public class CreateThread extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		request.setCharacterEncoding("UTF-8");
 		String threadName = request.getParameter("threadName");
 		String text = request.getParameter("text");
 		
@@ -64,14 +63,18 @@ public class CreateThread extends HttpServlet {
 			
 			//セッションスコープに保存されたユーザー情報を取得
 			HttpSession session = request.getSession();
-			User loginUser = (User)session.getAttribute("loginUser");
+			Account loginUser = (Account)session.getAttribute("loginUser");
+			session.setAttribute("index", 0);
 			
 			//現在の時間を取得
 			NowDateLogic nowDate = new NowDateLogic();
 			String date = nowDate.execute();
 			
+			//年齢を取得
+			int age = loginUser.getAge();
+			
 			//つぶやきをつぶやきリストに追加する
-			Mutter mutter = new Mutter(loginUser.getName(),text,date);
+			Mutter mutter = new Mutter(loginUser.getName(),text,age,date);
 			List<Mutter> mutterList = new ArrayList<Mutter>();
 			PostMutterLogic postMutterLogic = new PostMutterLogic();
 			postMutterLogic.execute(mutter, mutterList);
@@ -85,7 +88,7 @@ public class CreateThread extends HttpServlet {
 			application.setAttribute("threadList", threadList);
 			
 			//メニュー画面へフォワード
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/loginResult.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/main.jsp");
 			dispatcher.forward(request, response);
 			
 		}else {

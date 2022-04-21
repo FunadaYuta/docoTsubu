@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import model.Account;
 import model.LoginLogic;
 import model.User;
 
@@ -20,28 +21,46 @@ public class Login extends HttpServlet {
     public Login() {
         super();
     }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	RequestDispatcher dispatcher = request.getRequestDispatcher("/loginResult.jsp");
+		dispatcher.forward(request, response);
+    }
+		
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		request.setCharacterEncoding("UTF-8");
+	
+		
+		//ログイン処理
+		//LoginLogic loginLogic = new LoginLogic();
+		//boolean isLogin = loginLogic.execute(user);
+		
+		//リクエストパラメータの取得
 		String name = request.getParameter("name");
 		String pass = request.getParameter("pass");
 		
-		//Userインスタンスの生成
 		User user = new User(name,pass);
 		
-		//ログイン処理
-		LoginLogic loginLogic = new LoginLogic();
-		boolean isLogin = loginLogic.execute(user);
+		//ログイン処理の実行
+		LoginLogic bo = new LoginLogic();
+		Account account = bo.execute(user);
+		
 		
 		//ログイン成功時の処理
-		if(isLogin) {
+		if(account != null) {
 			HttpSession session = request.getSession();
-			session.setAttribute("loginUser", user);
+			session.setAttribute("loginUser", account);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/loginResult.jsp");
+			dispatcher.forward(request, response);
+		}else {
+			String errorMsg = "ユーザー名かパスワードが正しくありません";
+			request.setAttribute("errorMsg", errorMsg);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/");
+			dispatcher.forward(request, response);
 		}
 		//ログイン結果画面へフォワード
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/loginResult.jsp");
-		dispatcher.forward(request, response);
+		
 		
 	}
 
